@@ -13,7 +13,14 @@
     line='VCS="git"'
 
 - name: Enable Git usage in etckeeper config (part 2)
-  shell: cat /etc/etckeeper/etckeeper.conf | grep "^VCS=" | grep -v "git" || true
+  lineinfile:
+      dest: /etc/etckeeper/etckeeper.conf
+      backrefs: yes
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^VCS="bzr"', line: '#VCS="bzr"' }
+    - { regexp: '^#?VCS="git"', line: 'VCS="git"' }
   register: etckeeper_default_vcs
   changed_when: false
 
